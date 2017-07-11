@@ -1,0 +1,252 @@
+
+
+
+
+<html ng-app="demoApp">
+<head>
+    <title>Amazon Cloud Watch Log</title>
+    
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- SPELLS -->
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
+	<script src="core.js"></script>
+    
+    <style>
+            .glyphicon-refresh-animate {
+            -animation: spin .7s infinite linear;
+            -webkit-animation: spin2 .7s infinite linear;
+        }
+
+        @-webkit-keyframes spin2 {
+            from { -webkit-transform: rotate(0deg);}
+            to { -webkit-transform: rotate(360deg);}
+        }
+
+        @keyframes spin {
+            from { transform: scale(1) rotate(0deg);}
+            to { transform: scale(1) rotate(360deg);}
+        }
+    </style>
+</head>
+<body ng-controller="mainController">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3> Amazon CloudWatchLog</h3>
+            </div>
+        </div>
+            
+<ul class="nav nav-tabs" >
+  <li class="active"><a data-toggle="tab" href="#home">Log Groups</a></li>
+  <li><a data-toggle="tab" href="#menu1">Log Streams</a></li>
+  <li><a data-toggle="tab" href="#menu2">Log Events</a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="home" class="tab-pane fade in active" data-ng-init="getlogGroups()">
+    <h3>Log Groups</h3>
+      <div class="row">
+          
+        <div class="alert alert-info" role="alert" ng-if='logroupLoading==true'>
+            <p style="text-align:center;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"> </span> Fetching...</p>
+        </div>
+          
+        <div class="panel-group" id="accordion">
+              
+          <div class="panel panel-default" ng-repeat="logGroups in loggroupData">
+              
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1{{$index}}">
+                {{$index+1}}. {{logGroups.logGroupName}}</a>
+              </h4>
+            </div>
+            <div id="collapse1{{$index}}" class="panel-collapse collapse">
+              <div class="panel-body">
+                   <table class="table">
+                    <thead>
+                      <tr>
+                        <th>LogGroup Name</th>
+                        <th>{{logGroups.logGroupName}}</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>arn</td>
+                        <td>{{logGroups.arn}}</td>
+                      </tr>
+                      <tr>
+                        <td>creationTime</td>
+                        <td>{{logGroups.creationTime}}</td>
+                      </tr>
+                      <tr>
+                        <td>metricFilterCount</td>
+                        <td>{{logGroups.metricFilterCount}}</td>
+                      </tr>
+                      <tr>
+                        <td>storedBytes</td>
+                        <td>{{logGroups.storedBytes}}</td>
+                      </tr>
+                    </tbody>
+                  </table>   
+                </div>
+            </div>
+          </div>
+            
+        </div>
+      </div>
+  </div>
+    
+  <div id="menu1" class="tab-pane fade"  >
+    <h3>Log Streams</h3>
+    <div class="row" style="padding-bottom:10px !important;">
+        <div class="col-md-8 col-sm-8 col-xl-8">
+            <div class="input-group input-group">
+              <span class="input-group-addon" id="sizing-addon1">LogGroupName</span>
+              <input type="text" class="form-control" placeholder="Enter LogGroupName here" aria-describedby="sizing-addon1" ng-model="loggroupnameForLogstream">
+            </div>  
+        </div>    
+        <div class="col-md-4 col-sm-4 col-xl-4">
+            <button type="button" class="btn btn-secondary" ng-click="getlogstreams(0)" >GET</button>
+        </div>
+    </div>
+  
+    <div class="row" style="padding-bottom:10px !important;">
+        <div class="col-md-4 col-sm-4 col-xl-4" style="float:right;">
+            <button type="button" class="btn btn-secondary" ng-click="getlogstreams(-1)" > Back</button>
+            <button type="button" class="btn btn-secondary" ng-click="getlogstreams(1);" >Next</button>
+        </div>
+    </div>
+      
+      <div class="row">
+          
+        <div class="alert alert-info" role="alert" ng-if='logstreamLoading==true'>
+            <p style="text-align:center;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"> </span> Fetching...</p>
+        </div>
+          
+        <div class="panel-group" id="accordion" ng-if='logstreamLoading==false'>
+              
+          <div class="panel panel-default" ng-repeat="logStream in logstreamData">
+              
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2{{$index}}">
+                {{increment*50+$index+1}}. {{logStream.logStreamName}}</a>
+              </h4>
+            </div>
+            <div id="collapse2{{$index}}" class="panel-collapse collapse">
+              <div class="panel-body">
+                   <table class="table">
+                    <thead>
+                      <tr>
+                        <th>LogStream Name</th>
+                        <th>{{logStream.logStreamName}}</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>arn</td>
+                        <td>{{logStream.arn}}</td>
+                      </tr>
+                      <tr>
+                        <td>creationTime</td>
+                        <td>{{logStream.creationTime}}</td>
+                      </tr>
+                      <tr>
+                        <td>storedBytes</td>
+                        <td>{{logStream.storedBytes}}</td>
+                      </tr>
+                    </tbody>
+                  </table>   
+                </div>
+            </div>
+          </div>
+            
+        </div>
+      </div>
+  </div>
+    
+    
+    
+ <div id="menu2" class="tab-pane fade"  >
+    <h3>Log Events</h3>
+    <div class="row" style="padding-bottom:10px !important;">
+            <div class="input-group input-group">
+              <span class="input-group-addon" id="sizing-addon1">LogGroupName</span>
+              <input type="text" class="form-control" placeholder="Enter LogGroupName here" aria-describedby="sizing-addon1" ng-model="loggroupnameForLogeventswithFliter">
+            </div>  
+  
+    </div>
+    <div class="row" style="padding-bottom:10px !important;">
+            <div class="input-group input-group">
+              <span class="input-group-addon" id="sizing-addon1">Filter</span>
+              <input type="text" class="form-control" placeholder="Enter filters here" aria-describedby="sizing-addon1" ng-model="logeventsfliter" ng-change="getlogeventswithfilters()">
+            </div>   
+    </div>
+     
+      <div class="row">
+          
+          <div class="alert alert-info" role="alert" ng-if='logeventwithFliterLoading==true'>
+            <p style="text-align:center;"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"> </span> Fetching...</p>
+        </div>
+          
+        <div class="panel-group" id="accordion">
+              
+          <div class="panel panel-default" ng-repeat="logevents in logeventwithFliterData">
+              
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3{{$index}}">
+                {{$index+1}}. {{logevents.eventId}}</a>
+              </h4>
+            </div>
+            <div id="collapse3{{$index}}" class="panel-collapse collapse">
+              <div class="panel-body" ng-if="logeventwithFliterLoading==false">
+                   <table class="table">
+                    <thead>
+                      <tr>
+                        <th>eventId</th>
+                        <th>{{logevents.eventId}}</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>ingestionTime</td>
+                        <td>{{logevents.ingestionTime}}</td>
+                      </tr>
+                      <tr>
+                        <td>logStreamName</td>
+                        <td>{{logevents.logStreamName}}</td>
+                      </tr>
+                      <tr style="word-wrap:break-all;">
+                        <td>message</td>
+                          <td style="word-wrap:break-all;">{{logevents.message}}</td>
+                      </tr>
+                       <tr>
+                        <td>timestamp</td>
+                        <td>{{logevents.timestamp}}</td>
+                      </tr>
+                    </tbody>
+                  </table>   
+                </div>
+            </div>
+          </div>
+            
+        </div>
+      </div>
+  </div> 
+    
+    
+    
+ 
+</div>
+    </div>
+</body>
+</html>
+    
+    
