@@ -5,9 +5,9 @@
 // Load the SDK and UUID
 var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
+const fs = require('fs');
 
-
-module.exports = function(app) {
+module.exports = function Router(app) {
 
 AWS.config.loadFromPath('./config.json');
 // Create an CloudWatchLog client
